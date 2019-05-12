@@ -38,6 +38,10 @@ public class Game {
     return nextThree;
   }
 
+  public void setScore(int score) {
+    this.score = score;
+  }
+
   public void newTiles() {
     nextThree = new TileID[3];
     hasNextThree = new boolean[3];
@@ -103,14 +107,14 @@ public class Game {
 
    public static synchronized int[][] placePiece(int[][] board, int row, int col, TileID tile, int[] result) {
     List<Coordinate> offsets = tile.getOffsets();
+    result[0] = 0;
     if (checkPlacePiece(board, row, col, tile)) {
       for (Coordinate c : offsets) {
         board[row + c.getRow()][col + c.getCol()] = 1;
-        result[0] = checkLineClear(board, row + c.getRow(), col + c.getCol());
+        result[0] += checkLineClear(board, row + c.getRow(), col + c.getCol());
       }
       return board;
     }
-    result[0] = 0;
     return null;
   }
 
@@ -231,7 +235,6 @@ public class Game {
     }
     result += "  0 1 2 3 4 5 6 7 8 9 \n";
     result += "Score: " + score + "\n";
-    result += "Board Eval: " + MCTSHeuristics.evaluate(board) + "\n";
     result += "\n";
     result += "0: " + nextThree[0].toString() + " " + hasNextThree[0] + "\n";
     result += "1: " + nextThree[1].toString() + " " + hasNextThree[1] + "\n";

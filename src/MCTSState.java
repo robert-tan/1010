@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MCTSState {
@@ -60,18 +62,38 @@ public class MCTSState {
     visitCount++;
   }
 
-  void updateScore(double score) {
-    if (visitCount == 1) {
-      boardScore = score;
-    } else {
-      boardScore = ((boardScore * visitCount) + score) / visitCount - 1;
-    }
+//  void updateScore(double score) {
+//    boardScore = ((boardScore * (visitCount - 1)) + score) / visitCount;
+//  }
+
+  void addScore(double score) {
+    if (boardScore != Integer.MIN_VALUE) boardScore += score;
   }
 
-  void randomPlay() {
+  void randomPlay2() {
     List<Move> moves = game.getAllValidMoves();
     int random = (int) (Math.random() * moves.size());
     Move move = moves.get(random);
     game.playPiece(move.getRow(), move.getCol(), move.getTile());
   }
+
+  void randomPlay() {
+    List<Move> moves = game.getAllValidMoves();
+    int random;
+//    if (moves.size() > 10) {
+//      moves.forEach(m -> {
+//        Game temp = new Game(game);
+//        temp.playPiece(m.getRow(), m.getCol(), m.getTile());
+//        m.setMoveScore(MCTSHeuristics.evaluate(temp.getBoard()));
+//      });
+//      Collections.sort(moves);
+//      random = (int) (Math.random() * 10);
+//      random = moves.size() - random - 1;
+//    } else {
+    random = (int) (Math.random() * moves.size());
+//    }
+    Move move = moves.get(random);
+    game.playPiece(move.getRow(), move.getCol(), move.getTile());
+  }
+
 }

@@ -3,7 +3,8 @@ import java.util.List;
 import java.util.Random;
 
 public enum TileID {
-  ONE(1), TWO_VER(2), TWO_HOR(2), THREE_VER(2), THREE_HOR(3), THREE_BOTTOM_LEFT(3),
+
+  ONE(1), TWO_VER(2), TWO_HOR(2), THREE_VER(3), THREE_HOR(3), THREE_BOTTOM_LEFT(3),
   THREE_BOTTOM_RIGHT(3), THREE_TOP_LEFT(3), THREE_TOP_RIGHT(3), FOUR_VERT(4), FOUR_HOR(4),
   FOUR_SQUARE(4), FIVE_TOP_RIGHT(5), FIVE_TOP_LEFT(5), FIVE_BOTTOM_RIGHT(5), FIVE_BOTTOM_LEFT(5),
   FIVE_VERT(5), FIVE_HOR(5), NINE_SQUARE(9);
@@ -141,6 +142,53 @@ public enum TileID {
       }
     }
     return offsets;
+  }
+
+  public short[] getPieceRows() {
+    short[] pieceRows = new short[10];
+    switch (this) {
+      case ONE:
+        pieceRows[0] = Short.MIN_VALUE;
+        break;
+      case TWO_VER:
+        break;
+      case TWO_HOR:
+        break;
+      case THREE_VER:
+        break;
+      case THREE_HOR:
+        break;
+      case THREE_BOTTOM_LEFT:
+        break;
+      case THREE_BOTTOM_RIGHT:
+        break;
+      case THREE_TOP_LEFT:
+        break;
+      case THREE_TOP_RIGHT:
+        break;
+      case FOUR_VERT:
+        break;
+      case FOUR_HOR:
+        break;
+      case FOUR_SQUARE:
+        break;
+      case FIVE_TOP_RIGHT:
+        break;
+      case FIVE_TOP_LEFT:
+        break;
+      case FIVE_BOTTOM_RIGHT:
+        break;
+      case FIVE_BOTTOM_LEFT:
+        break;
+      case FIVE_VERT:
+        break;
+      case FIVE_HOR:
+        break;
+      case NINE_SQUARE:
+        break;
+    }
+
+    return pieceRows;
   }
 
 }

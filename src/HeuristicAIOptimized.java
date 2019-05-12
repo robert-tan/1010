@@ -1,32 +1,58 @@
 import java.util.ArrayList;
-    import java.util.Collections;
-    import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class HeuristicAI implements GameAI {
+public class HeuristicAIOptimized implements GameAI {
 
-  private Game game;
+  private GameOptimized game = new GameOptimized();
 
   @Override
   public void setGame(Game game) {
+    this.game = new GameOptimized();
+  }
+
+  public void setGame(GameOptimized game) {
     this.game = game;
   }
 
   @Override
   public Move getNextMove() {
-    List<Move> moves = game.getAllValidMoves();
-    Move bestMove = null;
+    Set<Byte[]> moves = game.getAllValidMoves();
+    Byte[] bestMove = null;
     int bestScore = Integer.MIN_VALUE;
-    for (Move move : moves) {
-      int[][] board = Game.dupBoard(game.getBoard());
-      int[] result = new int[1];
-      Game.placePiece(board, move.getRow(), move.getCol(), move.getTile(), result);
-      int score = evaluate(board);
+    for (Byte[] move : moves) {
+      GameOptimized temp = new GameOptimized(game);
+      temp.playPiece(move[0], move[1], move[2]);
+      int score = evaluate(temp.getBoardRows());
+      if (score > bestScore) {
+        bestMove = move;
+        bestScore = score;
+      }
+    }
+    if (bestMove == null) return null;
+    return new Move(bestMove[0], bestMove[1], GameOptimized.TILE_IDS[bestMove[2]]);
+  }
+
+  public Byte[] getNextMoveOptimized() {
+    Set<Byte[]> moves = game.getAllValidMoves();
+    Byte[] bestMove = null;
+    int bestScore = Integer.MIN_VALUE;
+    for (Byte[] move : moves) {
+      GameOptimized temp = new GameOptimized(game);
+      temp.playPiece(move[0], move[1], move[2]);
+      int score = evaluate(temp.getBoardRows());
       if (score > bestScore) {
         bestMove = move;
         bestScore = score;
       }
     }
     return bestMove;
+  }
+
+  public GameOptimized getGame() {
+    return game;
   }
 
   private int positionScore(int[][] board) {
@@ -291,9 +317,114 @@ public class HeuristicAI implements GameAI {
   }
 
   public int evaluate(int[][] board) {
-//    return 3 * largestOpenSpace(board) - 3 * getNumEdges(board) - 8 * getNumCorners(board) - positionScore(board)
-//        - 10 * enclosedSingles(board) - 10 * numCantBePlaced(board) - 10 * numLonePiece(board) + 10 * numSquareGaps(board, 5);
+    return 3 * largestOpenSpace(board) - 3 * getNumEdges(board) - 8 * getNumCorners(board) - positionScore(board)
+        - 10 * enclosedSingles(board) - 10 * numCantBePlaced(board) - 10 * numLonePiece(board) + 10 * numSquareGaps(board, 5);
+  }
+
+  public int evaluate(short[] board) {
     return 0 - positionScore(board);
   }
 
+  private int positionScore(short[] board) {
+    int result = 0;
+    short[] vals0 = {
+        (short) 0b1111111111000000,
+        (short) 0b1000000001000000,
+        (short) 0b1000000001000000,
+        (short) 0b1000000001000000,
+        (short) 0b1000000001000000,
+        (short) 0b1000000001000000,
+        (short) 0b1000000001000000,
+        (short) 0b1000000001000000,
+        (short) 0b1000000001000000,
+        (short) 0b1111111111000000,
+    };
+    short[] vals1 = {
+        (short) 0b0,
+        (short) 0b0111111110000000,
+        (short) 0b0100000010000000,
+        (short) 0b0100000010000000,
+        (short) 0b0100000010000000,
+        (short) 0b0100000010000000,
+        (short) 0b0100000010000000,
+        (short) 0b0100000010000000,
+        (short) 0b0111111110000000,
+        (short) 0b0,
+    };
+
+    short[] vals2 = {
+        (short) 0b0,
+        (short) 0b0,
+        (short) 0b0011111100000000,
+        (short) 0b0010000100000000,
+        (short) 0b0010000100000000,
+        (short) 0b0010000100000000,
+        (short) 0b0010000100000000,
+        (short) 0b0011111100000000,
+        (short) 0b0,
+        (short) 0b0,
+    };
+
+    short[] vals3 = {
+        (short) 0b0,
+        (short) 0b0,
+        (short) 0b0,
+        (short) 0b0001111000000000,
+        (short) 0b0001001000000000,
+        (short) 0b0001001000000000,
+        (short) 0b0001111000000000,
+        (short) 0b0,
+        (short) 0b0,
+        (short) 0b0,
+    };
+
+    short[] vals4 = {
+        (short) 0b0,
+        (short) 0b0,
+        (short) 0b0,
+        (short) 0b0,
+        (short) 0b0000110000000000,
+        (short) 0b0000110000000000,
+        (short) 0b0,
+        (short) 0b0,
+        (short) 0b0,
+        (short) 0b0,
+    };
+
+    for (int i = 0; i < 10; i++) {
+      result += Integer.bitCount(0xFFFF & (vals0[i] & board[i]));
+      result += 2 * Integer.bitCount(0xFFFF & (vals1[i] & board[i]));
+      result += 3 * Integer.bitCount(0xFFFF & (vals2[i] & board[i]));
+      result += 4 * Integer.bitCount(0xFFFF & (vals3[i] & board[i]));
+      result += 6 * Integer.bitCount(0xFFFF & (vals4[i] & board[i]));
+    }
+    return result;
+  }
+
+//  private int evaluate3(short[] board) {
+//    int numEdges = 0;
+//    int numSquareGaps = 0;
+//    int numCorners = 0;
+//    int openSpaceScore = 0;
+//    int positionScore = 0;
+//    int numEnclosedSingles = 0;
+//    int numCantBePlaced = 0;
+//    int numLonePiece = 0;
+//
+//    Set<TileID> canBePlaced = new HashSet<>();
+//
+//    for (int i = 0; i < 10; i++) {
+//
+//
+//
+//    }
+//
+//    openSpaceScore = largestOpenSpace(board);
+//
+//    numCantBePlaced = 19 - canBePlaced.size();
+//
+//    return 3 * openSpaceScore - 3 * numEdges - 8 * numCorners - positionScore - 10 * numEnclosedSingles
+//        - 10 * numCantBePlaced - 10 * numLonePiece + 10 * numSquareGaps;
+//  }
+//
 }

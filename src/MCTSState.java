@@ -70,30 +70,38 @@ public class MCTSState {
     if (boardScore != Integer.MIN_VALUE) boardScore += score;
   }
 
-  void randomPlay2() {
+  boolean randomPlay2() {
     List<Move> moves = game.getAllValidMoves();
+    if (moves.size() == 0) return false;
     int random = (int) (Math.random() * moves.size());
     Move move = moves.get(random);
     game.playPiece(move.getRow(), move.getCol(), move.getTile());
+    return true;
   }
 
-  void randomPlay() {
-    List<Move> moves = game.getAllValidMoves();
+  boolean randomPlay() {
+    List<Move> moves;
+    TileID randomTile = GameOptimized.TILE_IDS[(int) (Math.random() * 19)];
+    moves = game.getAllValidMovesForTile(randomTile);
+    if (moves.size() == 0) return false;
     int random;
-//    if (moves.size() > 10) {
-//      moves.forEach(m -> {
-//        Game temp = new Game(game);
-//        temp.playPiece(m.getRow(), m.getCol(), m.getTile());
-//        m.setMoveScore(MCTSHeuristics.evaluate(temp.getBoard()));
-//      });
-//      Collections.sort(moves);
-//      random = (int) (Math.random() * 10);
-//      random = moves.size() - random - 1;
-//    } else {
     random = (int) (Math.random() * moves.size());
-//    }
     Move move = moves.get(random);
     game.playPiece(move.getRow(), move.getCol(), move.getTile());
+//    Move bestMove = moves.get(0);
+//    int bestScore = Integer.MIN_VALUE;
+//    for (Move move : moves) {
+//      int[][] board = Game.dupBoard(game.getBoard());
+//      int[] result = new int[1];
+//      Game.placePiece(board, move.getRow(), move.getCol(), move.getTile(), result);
+//      int score = MCTSHeuristics.evaluate(board);
+//      if (score > bestScore) {
+//        bestMove = move;
+//        bestScore = score;
+//      }
+//    }
+//    game.playPiece(bestMove.getRow(), bestMove.getCol(), bestMove.getTile());
+    return true;
   }
 
 }

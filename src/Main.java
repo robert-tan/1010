@@ -8,21 +8,22 @@ public class Main {
 
     Scanner sc = new Scanner(System.in);
     Random rand = new Random();
+    Game game = new Game();
 
-    GameOptimized game = new GameOptimized();
+//    GameOptimized game = new GameOptimized();
 //    Game game1 = game.toGame();
 //    HeuristicAI ai1 = new HeuristicAI();
 //    ai1.setGame(game1);
 //    HeuristicAIOptimized ai = new HeuristicAIOptimized();
 //    ai.setGame(game);
 
-    MinimaxAIOptimized ai = new MinimaxAIOptimized();
+    GameAI ai = new MCTSBasicAI();
     ai.setGame(game);
 
     while(!game.isFinished()) {
       System.out.println("Optimized AI:");
       System.out.println(game);
-      System.out.println("Optimized board eval: " + ai.evaluate(game.getBoardRows()));
+//      System.out.println("Optimized board eval: " + ai.evaluate(game.getBoardRows()));
 //      System.out.println("Normal board eval: " + ai1.evaluate(ai.getGame().toBoard()));
 //      System.out.println();
 //      System.out.println("Normal AI:");
@@ -35,14 +36,14 @@ public class Main {
 //          System.out.println(move);
 //        }
 //      }
-//      Move move = ai1.getNextMove();
-//      System.out.println("Normal AI Determined Best Move: " + move);
-////      sc.nextLine();
-//      game1.playPiece(move.getRow(), move.getCol(), move.getTile());
+      Move move = ai.getNextMove();
+      System.out.println("Normal AI Determined Best Move: " + move);
+//      sc.nextLine();
+      game.playPiece(move.getRow(), move.getCol(), move.getTile());
 
-      Byte[] move1 = ai.getNextMoveOptimized();
-      System.out.println("Optimized AI Determined Best Move: Row = " + move1[0] + " Col = " + move1[1] + " Tile = " + GameOptimized.TILE_IDS[move1[2]]);
-      game.playPiece(move1[0], move1[1], move1[2]);
+//      Byte[] move1 = ai.getNextMoveOptimized();
+//      System.out.println("Optimized AI Determined Best Move: Row = " + move1[0] + " Col = " + move1[1] + " Tile = " + GameOptimized.TILE_IDS[move1[2]]);
+//      game.playPiece(move1[0], move1[1], move1[2]);
 
     }
 

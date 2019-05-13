@@ -76,6 +76,6 @@ public class MCTSNode {
   }
 
   public MCTSNode getChildWithMaxScore() {
-    return Collections.max(this.childArray, Comparator.comparing(c -> c.getState().getVisitCount()));
+    return Collections.max(this.childArray, Comparator.comparing(c -> c.getState().getBoardScore()));
   }
 }

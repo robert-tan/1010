@@ -53,3 +53,6 @@
 //  }
 //
 //}
+
+
+// Rollout function: randomly place pieces until game ends - score is then the number of randomly placed pieces

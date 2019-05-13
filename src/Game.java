@@ -215,6 +215,18 @@ public class Game {
     return moves;
   }
 
+  public List<Move> getAllValidMovesForAllTiles() {
+    List<Move> moves = null;
+    for (TileID tile : TileID.values()) {
+      if (moves == null) {
+        moves = getAllValidMovesForTile(tile);
+      } else {
+        moves.addAll(getAllValidMovesForTile(tile));
+      }
+    }
+    return moves;
+  }
+
   public int getScore() {
     return score;
   }

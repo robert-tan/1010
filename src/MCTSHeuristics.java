@@ -230,7 +230,7 @@ public class MCTSHeuristics {
   }
 
   public static int evaluate(int[][] board) {
-    return 3 * largestOpenSpace(board) - 3 * getNumEdges(board) - 6 * getNumCorners(board) - positionScore(board)
+    return 1000 + 3 * largestOpenSpace(board) - 3 * getNumEdges(board) - 6 * getNumCorners(board) - positionScore(board)
         - 10 * enclosedSingles(board) - 10 * numCantBePlaced(board) - 5 * numLonePiece(board);
   }
 

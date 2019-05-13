@@ -23,9 +23,11 @@ The popular mobile game 1010! complete with several variants of AI implementatio
 * Able to evaluate the best SET of moves given any 3 piece set
 * Exponentially slower than the Heuristic AI
 * Scores reach 35000+ at depth 2-3 (can not calculate median due to time impracticality)
+* With one more layer of depth, has the potential to reach infinite play time
 
 ### Monte Carlo Tree Search (MCTS) AI
 * Simulates a large number of outcomes and back-propagates results through the result tree
 * Balances exploration and exploitation with UCT
-* Scores depend on how much search time is allowed but general MUCH MUCH lower than Minimax AI
-* Conclude MCTS is not a very useful algorithm for 1010! as perfect play will never reach termination and many shallow traps exist
+* Implemented without knowledge of the game itself other than basic rules
+* Scores depend on how much search time is allowed but general MUCH MUCH lower than Minimax AI (around the 1000-5000 range)
+* Can reach higher scores when combined with Heuristic board evaluation algorithm (10000+)

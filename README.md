@@ -1,5 +1,5 @@
 # 1010
-The popular mobile game 1010! complete with several variants of AI implementations that will play the game by itself. Currently includes Minimax and Monte Carlo Tree Search. Future variations may include implementations utilizing concurrency, temporal difference, neural networks (dl4j)...etc.
+The popular mobile game 1010! complete with several variants of AI implementations that will play the game by itself. Currently includes Minimax and Monte Carlo Tree Search. Future variations may include implementations utilizing concurrency, temporal difference, neural networks (dl4j)...etc. Below, I have detailed the included AIs and game implementations:
 
 ## Included AI Implementations
 ### Random AI
@@ -37,3 +37,19 @@ The popular mobile game 1010! complete with several variants of AI implementatio
   - Improper balance of exploration and exploitation (has to do with the board score)
 * Most of these limitations are likely to be overcome with a Temporal Difference (TD) implementation
 * Can reach even higher scores when combined with Heuristic board evaluation algorithm, but will become much slower to adequately search possibilities
+
+## Optimizations of the Game Class
+* Current game used contains many class, function, and memory overheads
+  - Board implemented via a 10x10 array of integers
+  - Most operations cycle through each entry of the board
+* Created optimized version using a bitboard implementation via an array of 10 shorts
+  - Each row represented with one short
+  - Now instead of iterating over 100 integers, board iterates over 10 shorts
+* Removed the Move class
+* Changed Tile identification (TileID) to bytes with a symbol table
+* Added width and height properties of tiles to reduce unnecessary iterations on loops
+* See a roughly 3x increase in performance on game operations (tested using the Basic AI and Random AI)
+* Limitations: 
+  - Heuristic function too complex to convert using bitboards (therefore Minimax and Heuristic AIs would be impractical to implement this way)
+  - Bitwise operations on Java not as efficient/robust as in other (lower level) languages
+* Next step: implement MCTS via the optimized game

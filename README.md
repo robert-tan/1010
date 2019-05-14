@@ -30,4 +30,7 @@ The popular mobile game 1010! complete with several variants of AI implementatio
 * Balances exploration and exploitation with UCT
 * Implemented without knowledge of the game itself other than basic rules
 * Scores depend on how much search time is allowed but general MUCH MUCH lower than Minimax AI (around the 1000-5000 range)
+* Limitations likely due to:
+  - Ambiguity of 'goodness' for each outcome (several implementations for this exist)
+  - Existence of shallow traps
 * Can reach higher scores when combined with Heuristic board evaluation algorithm (10000+)

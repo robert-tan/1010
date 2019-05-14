@@ -35,13 +35,18 @@ The popular mobile game 1010! complete with several variants of AI implementatio
 * Balances exploration and exploitation with UCT
 * Implemented without knowledge of the game itself other than basic rules
 * Faster and arguably better than Minimax for this game
-* Scores depend on how much search time is allowed (given 2 seconds of search time for each set of 3 moves, able to reach 50000+)
+* Scores depend on how much search time is allowed (given 2 seconds of search time for each set of 3 moves, able to reach 100000+)
 * Limitations likely due to:
   - Ambiguity of 'goodness' for each outcome (several implementations for this exist)
   - Existence of shallow traps
   - Improper balance of exploration and exploitation (has to do with the board score)
 * Most of these limitations are likely to be overcome with a Temporal Difference (TD) implementation
 * Can reach even higher scores when combined with Heuristic board evaluation algorithm, but will become much slower to adequately search possibilities
+
+### Monte Carlo Tree Search (MCTS) AI with Optimized Game
+* Same as MCTS except implemented with optimizations to the game as detailed below
+* Uses a much smaller bitboard array to store the board
+* Usually between 50000 and 150000 moves evaluated given two seconds of search time
 
 ## Optimizations of the Game Class
 * Current game used contains many class, function, and memory overheads
@@ -57,4 +62,3 @@ The popular mobile game 1010! complete with several variants of AI implementatio
 * Limitations: 
   - Heuristic function too complex to convert using bitboards (therefore Minimax and Heuristic AIs would be impractical to implement this way)
   - Bitwise operations on Java not as efficient/robust as in other (lower level) languages
-* Next step: implement MCTS via the optimized game

@@ -27,7 +27,7 @@ The popular mobile game 1010! complete with several variants of AI implementatio
     - Since search is implemented with each move, minimization discards the scores for the worst 2 tiles
     - However, in doing so the AI discards the possibility of 2 or more same (worst case) tiles appearing in the next move set
 * Exponentially slower than the Heuristic AI
-* Scores reach 35000+ at depth 2-3 (around 5 seconds per set of moves, can not calculate median due to time impracticality)
+* Scores reach 35000+ at depth 2-3 (around 1-5 seconds per set of moves depending on dynamic depth, can not calculate median due to time impracticality)
 * With one more layer of depth, has the potential to reach infinite play time (however, it is very impractical to calculate the next set of 3 as the time complexity rises incredibly fast)
 
 ### Monte Carlo Tree Search (MCTS) AI

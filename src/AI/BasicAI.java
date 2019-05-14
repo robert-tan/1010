@@ -1,5 +1,8 @@
+package AI;
+
 import java.util.Collections;
 import java.util.List;
+import Game.*;
 
 public class BasicAI implements  GameAI {
 

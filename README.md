@@ -19,7 +19,7 @@ The popular mobile game 1010! complete with several variants of AI implementatio
 
 ### Minimax AI
 * Searches a dynamic depth ahead (typically 2-3 moves depending on available moves and evaluate score)
-* Board evaluated with the same algorithm as the Heuristic AI at the end of search
+* Game.Board evaluated with the same algorithm as the Heuristic AI at the end of search
 * Able to evaluate the best SET of moves given any 3 piece set
 * Exponentially slower than the Heuristic AI
 * Scores reach 35000+ at depth 2-3 (can not calculate median due to time impracticality)

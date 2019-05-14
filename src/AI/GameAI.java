@@ -1,3 +1,7 @@
+package AI;
+
+import Game.*;
+
 public interface GameAI {
 
   public Move getNextMove();

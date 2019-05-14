@@ -1,18 +1,17 @@
+package AI;
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import Game.*;
 
-public class MinimaxAIOptimized implements GameAI {
+public class HeuristicAIOptimized implements GameAI {
 
-  private static final int DEPTH = 3;
-
-  private GameOptimized game;
+  private GameOptimized game = new GameOptimized();
 
   @Override
   public void setGame(Game game) {
-
+    this.game = new GameOptimized();
   }
 
   public void setGame(GameOptimized game) {
@@ -21,86 +20,40 @@ public class MinimaxAIOptimized implements GameAI {
 
   @Override
   public Move getNextMove() {
-//    long start = System.currentTimeMillis();
-//    Move move = minimaxBestMove(getDepth(), game);
-//    long end = System.currentTimeMillis();
-//    System.out.println("Time take to calculate move: " + (end - start));
-//    return move;
-    return null;
-  }
-
-  public Byte[] getNextMoveOptimized() {
-    long start = System.currentTimeMillis();
-    Byte[] move = minimaxBestMove(getDepth(), game);
-    long end = System.currentTimeMillis();
-    System.out.println("Time take to calculate move: " + (end - start));
-    return move;
-  }
-
-  private int getDepth() {
-    int num = 0;
-    for (int i = 0; i < 3; i++) {
-      if (game.getMoveSet()[i] != -1) num++;
-    }
-    return num;
-  }
-
-  private int minimaxBestMoveAI(int depth, GameOptimized game) {
-    int bestScore;
-    if (depth == 0) {
-      bestScore = evaluate(game.getBoardRows());
-    } else {
-      List<Integer> scores = new ArrayList<>();
-      if (game.getMoveSet()[0] != -1 && game.getMoveSet()[1] != -1 && game.getMoveSet()[2] != -1) {
-        for (byte i = 0; i < 19; i++) {
-          Set<Byte[]> moves = game.getAllValidMovesForTile(i);
-          int bestScoreTile = Integer.MIN_VALUE;
-          int currentScoreTile;
-          for (Byte[] move : moves) {
-            GameOptimized temp = new GameOptimized(game);
-            temp.aiPlayPiece(move[0], move[1], move[2]);
-            currentScoreTile = minimaxBestMoveAI(depth - 1, temp);
-            if (currentScoreTile > bestScoreTile) {
-              bestScoreTile = currentScoreTile;
-            }
-          }
-          scores.add(bestScoreTile);
-        }
-        Collections.sort(scores);
-        bestScore = scores.get(2);
-      } else {
-        Set<Byte[]> moves = game.getAllValidMoves();
-        bestScore = Integer.MIN_VALUE;
-        int currentScore;
-        for (Byte[] move : moves) {
-          GameOptimized temp = new GameOptimized(game);
-          temp.aiPlayPiece(move[0], move[1], move[2]);
-          currentScore = minimaxBestMoveAI(depth - 1, temp);
-          if (currentScore >= bestScore) {
-            bestScore = currentScore;
-          }
-        }
-      }
-    }
-    return bestScore;
-  }
-
-  // Depth > 0
-  private Byte[] minimaxBestMove(int depth, GameOptimized game) {
     Set<Byte[]> moves = game.getAllValidMoves();
     Byte[] bestMove = null;
     int bestScore = Integer.MIN_VALUE;
-    int currentScore;
     for (Byte[] move : moves) {
       GameOptimized temp = new GameOptimized(game);
       temp.playPiece(move[0], move[1], move[2]);
-      currentScore = minimaxBestMoveAI(depth - 1, temp);
-      if (currentScore >= bestScore) {
-        bestScore = currentScore;
+      int score = evaluate(temp.getBoardRows());
+      if (score > bestScore) {
         bestMove = move;
+        bestScore = score;
+      }
+    }
+    if (bestMove == null) return null;
+    return new Move(bestMove[0], bestMove[1], GameOptimized.TILE_IDS[bestMove[2]]);
+  }
+
+  public Byte[] getNextMoveOptimized() {
+    Set<Byte[]> moves = game.getAllValidMoves();
+    Byte[] bestMove = null;
+    int bestScore = Integer.MIN_VALUE;
+    for (Byte[] move : moves) {
+      GameOptimized temp = new GameOptimized(game);
+      temp.playPiece(move[0], move[1], move[2]);
+      int score = evaluate(temp.getBoardRows());
+      if (score > bestScore) {
+        bestMove = move;
+        bestScore = score;
       }
     }
     return bestMove;
+  }
+
+  public GameOptimized getGame() {
+    return game;
   }
 
   private int positionScore(int[][] board) {
@@ -236,9 +189,9 @@ public class MinimaxAIOptimized implements GameAI {
   }
 
 //  private int getNumClusters(int[][] board) {
-//    int[][] tempBoard = Game.dupBoard(board);
+//    int[][] tempBoard = Game.Game.dupBoard(board);
 //    int numClusters = 0;
-//    Coordinate c;
+//    Game.Coordinate c;
 //    while((c = getNext(tempBoard, 1)) != null) {
 //      numClusters++;
 //      tempBoard[c.getRow()][c.getCol()] = 0;
@@ -364,93 +317,9 @@ public class MinimaxAIOptimized implements GameAI {
     return result;
   }
 
-  private int evaluate(int[][] board) {
+  public int evaluate(int[][] board) {
     return 3 * largestOpenSpace(board) - 3 * getNumEdges(board) - 8 * getNumCorners(board) - positionScore(board)
         - 10 * enclosedSingles(board) - 10 * numCantBePlaced(board) - 10 * numLonePiece(board) + 10 * numSquareGaps(board, 5);
-  }
-
-  private int evaluate2(int[][] board) {
-    int numEdges = 0;
-    int numSquareGaps = 0;
-    int numCorners = 0;
-    int openSpaceScore = 0;
-    int positionScore = 0;
-    int numEnclosedSingles = 0;
-    int numCantBePlaced = 0;
-    int numLonePiece = 0;
-
-    Set<TileID> canBePlaced = new HashSet<>();
-
-    for (int i = 0; i < 10; i++) {
-      for (int j = 0; j < 10; j++) {
-
-        if (i < 6 && j < 6) {
-          boolean gap = true;
-          for (int m = 0; m < 5; m++) {
-            for (int n = 0; n < 5; n++) {
-              if (board[i + m][j + n] == 1) {
-                gap = false;
-                break;
-              }
-            }
-            if (!gap) {
-              break;
-            }
-          }
-          if (gap) numSquareGaps++;
-        }
-
-        if (board[i][j] == 1 && getAdjacents(board, new Coordinate(i, j), 0, true).size() > 0) {
-          numEdges++;
-        }
-
-        if (i > 0 && i < 9 && j > 0 && j < 9 && board[i][j] == 1) {
-          if (!((board[i - 1][j] == 1) || (board[i + 1][j] == 1) ||
-              (board[i][j - 1] == 1) || (board[i][j + 1] == 1))) {
-            numLonePiece++;
-          }
-        }
-
-        for (TileID tile : TileID.values()) {
-          if (!canBePlaced.contains(tile) && Game.checkPlacePiece(board, i, j, tile)) {
-            canBePlaced.add(tile);
-          }
-        }
-
-        if (board[i][j] == 0) {
-          List<Coordinate> adjacents = getAdjacents(board, new Coordinate(i, j), 0, true);
-          if (adjacents.size() == 0) {
-            numEnclosedSingles++;
-          }
-        }
-
-        if (board[i][j] == 1 && isCorner(board, i, j)) numCorners++;
-
-        if (board[i][j] == 1) {
-          if ((i == 0 || i == 9) && (j == 0 || j == 9)) {
-
-          } else if (i == 0 || i == 9 || j == 0 || j == 9) {
-            positionScore++;
-          } else if (i == 1 || i == 8 || j == 1 || j == 8) {
-            positionScore += 2;
-          } else if (i == 2 || i == 7 || j == 2 || j == 7) {
-            positionScore += 3;
-          } else if (i == 3 || i == 6 || j == 3 || j == 6) {
-            positionScore += 4;
-          } else {
-            positionScore += 6;
-          }
-        }
-
-      }
-    }
-
-    openSpaceScore = largestOpenSpace(board);
-
-    numCantBePlaced = 19 - canBePlaced.size();
-
-    return 3 * openSpaceScore - 3 * numEdges - 8 * numCorners - positionScore - 10 * numEnclosedSingles
-        - 10 * numCantBePlaced - 10 * numLonePiece + 10 * numSquareGaps;
   }
 
   public int evaluate(short[] board) {
@@ -533,4 +402,30 @@ public class MinimaxAIOptimized implements GameAI {
     return result;
   }
 
+//  private int evaluate3(short[] board) {
+//    int numEdges = 0;
+//    int numSquareGaps = 0;
+//    int numCorners = 0;
+//    int openSpaceScore = 0;
+//    int positionScore = 0;
+//    int numEnclosedSingles = 0;
+//    int numCantBePlaced = 0;
+//    int numLonePiece = 0;
+//
+//    Set<Game.TileID> canBePlaced = new HashSet<>();
+//
+//    for (int i = 0; i < 10; i++) {
+//
+//
+//
+//    }
+//
+//    openSpaceScore = largestOpenSpace(board);
+//
+//    numCantBePlaced = 19 - canBePlaced.size();
+//
+//    return 3 * openSpaceScore - 3 * numEdges - 8 * numCorners - positionScore - 10 * numEnclosedSingles
+//        - 10 * numCantBePlaced - 10 * numLonePiece + 10 * numSquareGaps;
+//  }
+//
 }

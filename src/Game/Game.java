@@ -1,3 +1,5 @@
+package Game;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,6 +167,16 @@ public class Game {
     return false;
   }
 
+  public int numUnplayedPiece() {
+    int result = 0;
+    for (int i = 0; i < 3; i++) {
+      if (hasNextThree[i]) {
+        result++;
+      }
+    }
+    return result;
+  }
+
   public static synchronized boolean canBePlaced(int[][] board, TileID tile) {
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
@@ -212,6 +224,7 @@ public class Game {
         }
       }
     }
+//    System.out.println(moves.size());
     return moves;
   }
 
@@ -225,6 +238,16 @@ public class Game {
       }
     }
     return moves;
+  }
+
+  public int getNumPiecesOnBoard() {
+    int result = 0;
+    for (int i = 0; i < 10; i++) {
+      for (int j = 0; j < 10; j++) {
+        if (board[i][j] == 1) result++;
+      }
+    }
+    return result;
   }
 
   public int getScore() {

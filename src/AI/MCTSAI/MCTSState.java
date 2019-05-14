@@ -1,7 +1,7 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+package AI.MCTSAI;
+
 import java.util.List;
+import Game.*;
 
 public class MCTSState {
 
@@ -49,9 +49,9 @@ public class MCTSState {
 
 //  public List<MCTSState> getAllPossibleStates() {
 //    List<MCTSState> result = new ArrayList<>();
-//    List<Move> moves = game.getAllValidMoves();
-//    for (Move move : moves) {
-//      Game temp = new Game(game);
+//    List<Game.Move> moves = game.getAllValidMoves();
+//    for (Game.Move move : moves) {
+//      Game.Game temp = new Game.Game(game);
 //      temp.playPiece(move.getRow(), move.getCol(), move.getTile());
 //      result.add(new MCTSState(temp));
 //    }
@@ -81,19 +81,19 @@ public class MCTSState {
 
   boolean randomPlay() {
     List<Move> moves;
-    TileID randomTile = GameOptimized.TILE_IDS[(int) (Math.random() * 19)];
+    TileID randomTile = GameOptimized.TILE_IDS[((int) (Math.random() * 10)) + 9]; //
     moves = game.getAllValidMovesForTile(randomTile);
     if (moves.size() == 0) return false;
     int random;
     random = (int) (Math.random() * moves.size());
     Move move = moves.get(random);
-    game.playPiece(move.getRow(), move.getCol(), move.getTile());
-//    Move bestMove = moves.get(0);
+    game.playPieceAI(move.getRow(), move.getCol(), move.getTile());
+//    Game.Move bestMove = moves.get(0);
 //    int bestScore = Integer.MIN_VALUE;
-//    for (Move move : moves) {
-//      int[][] board = Game.dupBoard(game.getBoard());
+//    for (Game.Move move : moves) {
+//      int[][] board = Game.Game.dupBoard(game.getBoard());
 //      int[] result = new int[1];
-//      Game.placePiece(board, move.getRow(), move.getCol(), move.getTile(), result);
+//      Game.Game.placePiece(board, move.getRow(), move.getCol(), move.getTile(), result);
 //      int score = MCTSHeuristics.evaluate(board);
 //      if (score > bestScore) {
 //        bestMove = move;

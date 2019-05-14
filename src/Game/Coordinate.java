@@ -1,3 +1,5 @@
+package Game;
+
 public final class Coordinate {
 
   private int row;

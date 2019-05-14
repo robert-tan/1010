@@ -1,5 +1,8 @@
+package AI.MCTSAI;
+
 import java.util.ArrayList;
 import java.util.List;
+import Game.*;
 
 public class MCTSHeuristics {
 
@@ -134,9 +137,9 @@ public class MCTSHeuristics {
   }
 
 //  private int getNumClusters(int[][] board) {
-//    int[][] tempBoard = Game.dupBoard(board);
+//    int[][] tempBoard = Game.Game.dupBoard(board);
 //    int numClusters = 0;
-//    Coordinate c;
+//    Game.Coordinate c;
 //    while((c = getNext(tempBoard, 1)) != null) {
 //      numClusters++;
 //      tempBoard[c.getRow()][c.getCol()] = 0;

@@ -1,3 +1,5 @@
+package Game;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +29,7 @@ public class GameOptimized {
   private static final short[] FIVE_H_BOARD = {Short.MIN_VALUE >> 4, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   private static final short[] NINE_SQ_BOARD = {Short.MIN_VALUE >> 2, Short.MIN_VALUE >> 2, Short.MIN_VALUE >> 2, 0, 0, 0, 0, 0, 0, 0};
 
-  private static final short[][] TILES = {ONE_BOARD, TWO_H_BOARD, TWO_V_BOARD, THREE_V_BOARD,
+  public static final short[][] TILES = {ONE_BOARD, TWO_H_BOARD, TWO_V_BOARD, THREE_V_BOARD,
       THREE_H_BOARD, THREE_BL_BOARD, THREE_BR_BOARD, THREE_TL_BOARD, THREE_TR_BOARD, FOUR_V_BOARD,
       FOUR_H_BOARD, FOUR_SQ_BOARD, FIVE_TR_BOARD, FIVE_TL_BOARD, FIVE_BR_BOARD, FIVE_BL_BOARD,
       FIVE_V_BOARD, FIVE_H_BOARD, NINE_SQ_BOARD
@@ -81,8 +83,27 @@ public class GameOptimized {
     getNextMoveSet();
   }
 
+  public void setMoveSet(byte[] moveSet) {
+    this.moveSet = moveSet;
+  }
+
+  public void setBoard(short[] boardRows) {
+    this.boardRows = boardRows;
+  }
+
   public byte[] getMoveSet() {
     return moveSet;
+  }
+
+  public byte[][] getMoveSetPermutations() {
+    return new byte[][] {
+        {moveSet[0], moveSet[1], moveSet[2]},
+        {moveSet[0], moveSet[2], moveSet[1]},
+        {moveSet[1], moveSet[0], moveSet[2]},
+        {moveSet[1], moveSet[2], moveSet[0]},
+        {moveSet[2], moveSet[0], moveSet[1]},
+        {moveSet[2], moveSet[1], moveSet[0]}
+    };
   }
 
   private void getNextMoveSet() {
@@ -180,7 +201,7 @@ public class GameOptimized {
     } else {
       System.out.println("Row: " + row);
       System.out.println("Col: " + col);
-      System.out.println("TileID: " + TILE_IDS[tileID]);
+      System.out.println("Game.TileID: " + TILE_IDS[tileID]);
       throw new RuntimeException();
     }
     short[] offsetTile = offsetTile(row, col, tileID);
@@ -209,7 +230,7 @@ public class GameOptimized {
     if (tileID == -1) return false;
     for (byte i = 0; i <= 10 - TILE_HEIGHTS[tileID]; i++) {
       for (byte j = 0; j <= 10 - TILE_WIDTHS[tileID] ; j++) {
-        if (((((0xFFFF & TILES[tileID][i]) >>> (6 + j)) & 1) == 0) &&
+        if (//((((0xFFFF & TILES[tileID][i]) >>> (6 + j)) & 1) == 0) &&
             checkPlacePiece(offsetTile(i, j, tileID))) {
           return true;
         }
@@ -229,6 +250,14 @@ public class GameOptimized {
     return (moveSet[0] == -1 && moveSet[1] == -1 && moveSet[2] == -1);
   }
 
+  public byte getNumUnplayedPiece() {
+    byte result = 0;
+    if (moveSet[0] == -1) result++;
+    if (moveSet[1] == -1) result++;
+    if (moveSet[2] == -1) result++;
+    return result;
+  }
+
   public Set<Byte[]> getAllValidMoves() {
     Set<Byte[]> moves = new HashSet<>();
     for (byte which : moveSet) {
@@ -244,8 +273,8 @@ public class GameOptimized {
     return moves;
   }
 
-  public Set<Byte[]> getAllValidMovesForTile(byte which) {
-    Set<Byte[]> moves = new HashSet<>();
+  public List<Byte[]> getAllValidMovesForTile(byte which) {
+    List<Byte[]> moves = new ArrayList<>();
     for (byte i = 0; i <= 10 - TILE_HEIGHTS[which]; i++) {
       for (byte j = 0; j <= 10 - TILE_WIDTHS[which]; j++) {
         if (checkPlacePiece(offsetTile(i, j, which))) {
@@ -315,9 +344,9 @@ public class GameOptimized {
     result += "  0 1 2 3 4 5 6 7 8 9 \n";
     result += "Score: " + score + "\n";
     result += "\n";
-    result += "0: " + ((moveSet[0] == -1) ? "None" : TILE_IDS[moveSet[0]]);
-    result += "\n1: " + ((moveSet[1] == -1) ? "None" : TILE_IDS[moveSet[1]]);
-    result += "\n2: " + ((moveSet[2] == -1) ? "None" : TILE_IDS[moveSet[2]]);
+    result += "0: " + ((moveSet[0] == -1) ? "None" : moveSet[0] + " " + TILE_IDS[moveSet[0]]);
+    result += "\n1: " + ((moveSet[1] == -1) ? "None" : moveSet[1] + " " + TILE_IDS[moveSet[1]]);
+    result += "\n2: " + ((moveSet[2] == -1) ? "None" : moveSet[2] + " " + TILE_IDS[moveSet[2]]);
     return result;
   }
 

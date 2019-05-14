@@ -1,3 +1,5 @@
+package Game;
+
 public class Move implements Comparable<Move> {
 
   private int row;
@@ -33,7 +35,7 @@ public class Move implements Comparable<Move> {
 
   @Override
   public String toString() {
-    return "Move{" +
+    return "Game.Move{" +
         "row=" + row +
         ", col=" + col +
         ", tile=" + tile +

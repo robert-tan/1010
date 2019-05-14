@@ -1,9 +1,9 @@
-import java.util.ArrayList;
+package AI;
+
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import Game.*;
 
 public class AITests {
 
@@ -26,10 +26,10 @@ public class AITests {
 //        System.out.println("Running simulations...");
 //        double[] scores = new double[SIM_NUM];
 //        for (int i = 0; i < SIM_NUM / 4; i++) {
-//          Game game = new Game();
+//          Game.Game game = new Game.Game();
 //          while(!game.isFinished()) {
-//            List<Move> moves = game.getAllValidMoves();
-//            Move move = moves.get(rand.nextInt(moves.size()));
+//            List<Game.Move> moves = game.getAllValidMoves();
+//            Game.Move move = moves.get(rand.nextInt(moves.size()));
 //            game.playPiece(move.getRow(), move.getCol(), move.getTile());
 //          }
 //          scores[i] = (double) game.getScore();
@@ -74,7 +74,7 @@ public class AITests {
   }
 
   private static void runRandomSims() {
-    System.out.println("Running Random Move simulations...");
+    System.out.println("Running Random Game.Move simulations...");
     double[] scores = new double[SIM_NUM];
     long start = System.currentTimeMillis();
     for (int i = 0; i < SIM_NUM; i++) {

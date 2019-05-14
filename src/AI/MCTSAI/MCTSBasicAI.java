@@ -1,3 +1,7 @@
+package AI.MCTSAI;
+
+import AI.*;
+import Game.*;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -64,10 +68,20 @@ public class MCTSBasicAI implements GameAI {
   private int simulateRandomPlayout(MCTSNode node) {
     MCTSNode tempNode = new MCTSNode(node);
     MCTSState tempState = tempNode.getState();
+    if (tempState.getGame().numUnplayedPiece() != 3) {
+      tempState.setBoardScore(Integer.MIN_VALUE);
+      return 0;
+    }
     int i = 0;
     while (tempState.randomPlay()) {
       i++;
     }
+//    int numPieces = tempState.getGame().getNumPiecesOnBoard();
+//    if (numPieces < 30) {
+//      return (i > 20) ? 3 : 1;
+//    } else if (numPieces < 50) {
+//      return (i > 15) ? 2 : 1;
+//    }
 //    if (i <= 2) {
 //      tempState.setBoardScore(Integer.MIN_VALUE);
 //      return 0;
@@ -76,8 +90,8 @@ public class MCTSBasicAI implements GameAI {
     return i;
   }
 
-  private TileID[][] getTileSet(MCTSNode node) {
-    TileID[] set = node.getState().getGame().getNextThree();
+  private TileID[][] getTileSet(Game game) {
+    TileID[] set = game.getNextThree();
     return new TileID[][]{
         {set[0], set[1], set[2]},
         {set[0], set[2], set[1]},
@@ -88,8 +102,8 @@ public class MCTSBasicAI implements GameAI {
     };
   }
 
-//  private List<Move> getNextMoves() {
-////    TileID[][] perms = getTileSet();
+//  private List<Game.Move> getNextMoves() {
+////    Game.TileID[][] perms = getTileSet();
 //    long start = System.currentTimeMillis();
 //    long end = start + 5000;
 //
@@ -118,15 +132,18 @@ public class MCTSBasicAI implements GameAI {
 //  }
 
   private void getNextMoves() {
-    long start = System.currentTimeMillis();
-    long end = start + 20000;
 
     MCTSNode[] roots = new MCTSNode[6];
+    TileID[][] perms = getTileSet(game);
     for (int i = 0; i < 6; i++) {
+      long expandStart = System.currentTimeMillis();
       roots[i] = new MCTSNode(new MCTSState(game));
+      expandNodeOrig(roots[i], perms[i], 0);
+      System.out.println("Expansion took: " + (System.currentTimeMillis() - expandStart) + " ms");
     }
 
-    TileID[][] perms = getTileSet(roots[0]);
+    long start = System.currentTimeMillis();
+    long end = start + 2000;
     int j = 0;
     while (System.currentTimeMillis() < end) {
 //      System.out.println("Iteration number: " + j);
@@ -135,9 +152,8 @@ public class MCTSBasicAI implements GameAI {
         MCTSNode promisingNode = selectPromisingNode(roots[i]);
 
         if (promisingNode == roots[i] && j == 1) {
-          long expandStart = System.currentTimeMillis();
-          expandNodeOrig(promisingNode, perms[i], 0);
-          System.out.println("Expansion took: " + (System.currentTimeMillis() - expandStart) + " ms");
+
+          continue;
         } else if (promisingNode == roots[i]){
           continue;
         } else {
@@ -171,11 +187,17 @@ public class MCTSBasicAI implements GameAI {
     }
     System.out.println("Moves Evaluated: " + movesEvaluated);
     MCTSNode t0 = winnerTree.getChildWithMaxScore();
-    MCTSNode t1 = t0.getChildWithMaxScore();
-    MCTSNode t2 = t1.getChildWithMaxScore();
     moves[0] = t0.movePlayed;
-    moves[1] = t1.movePlayed;
-    moves[2] = t2.movePlayed;
+    MCTSNode t1 = null;
+    MCTSNode t2 = null;
+    if (t0.getChildArray().size() != 0) {
+      t1 = t0.getChildWithMaxScore();
+      moves[1] = t1.movePlayed;
+      if (t1.getChildArray().size() != 0) {
+        t2 = t1.getChildWithMaxScore();
+        moves[2] = t2.movePlayed;
+      }
+    }
     System.out.println(moves[0]);
     System.out.println(moves[1]);
     System.out.println(moves[2]);
@@ -191,21 +213,21 @@ public class MCTSBasicAI implements GameAI {
     if (moves[1] != null) {
       Move move = moves[1];
       moves[1] = null;
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+//      try {
+//        Thread.sleep(200);
+//      } catch (InterruptedException e) {
+//        e.printStackTrace();
+//      }
       return move;
     }
     if (moves[2] != null) {
       Move move = moves[2];
       moves[2] = null;
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+//      try {
+//        Thread.sleep(200);
+//      } catch (InterruptedException e) {
+//        e.printStackTrace();
+//      }
       return move;
     }
     getNextMoves();
@@ -217,13 +239,13 @@ public class MCTSBasicAI implements GameAI {
     this.game = game;
   }
 
-  public static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit) {
+  private static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit) {
     if (nodeVisit == 0) return Integer.MAX_VALUE;
-    return ((nodeWinScore / 10) / (double) nodeVisit) + 1.41 * Math.sqrt(Math.log(totalVisit)
+    return ((nodeWinScore) / (double) nodeVisit) + 1.41 * Math.sqrt(Math.log(totalVisit)
         / (double) nodeVisit);
   }
 
-  static MCTSNode findBestNodeWithUCT(MCTSNode node) {
+  private static MCTSNode findBestNodeWithUCT(MCTSNode node) {
     int parentVisit = node.getState().getVisitCount();
     return Collections.max(
         node.getChildArray(),

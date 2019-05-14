@@ -1,8 +1,16 @@
-import java.util.ArrayList;
-    import java.util.Collections;
-    import java.util.List;
+package AI;
 
-public class HeuristicAI implements GameAI {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import Game.*;
+
+
+public class MinimaxAI implements GameAI {
+
+  private static final int DEPTH = 3;
 
   private Game game;
 
@@ -13,17 +21,80 @@ public class HeuristicAI implements GameAI {
 
   @Override
   public Move getNextMove() {
+    long start = System.currentTimeMillis();
+    Move move = minimaxBestMove(getDepth(), game);
+    long end = System.currentTimeMillis();
+    System.out.println("Time take to calculate move: " + (end - start));
+    return move;
+  }
+
+  private int getDepth() {
+    if (game.getHasNextThree()[0] && game.getHasNextThree()[1] && game.getHasNextThree()[2] && evaluate(game.getBoard()) < 0) {
+      return 3;
+    } else if (evaluate(game.getBoard()) < -300) {
+      return 3;
+    } else if (evaluate(game.getBoard()) < -200) {
+      return 3;
+    } else {
+      return 2;
+    }
+  }
+
+  private int minimaxBestMoveAI(int depth, Game game) {
+    int bestScore;
+    if (depth == 0) {
+      bestScore = evaluate(game.getBoard());
+    } else {
+      List<Integer> scores = new ArrayList<>();
+      if (game.getHasNextThree()[0] && game.getHasNextThree()[1] && game.getHasNextThree()[2]) {
+        for (TileID tile : TileID.values()) {
+          List<Move> moves = game.getAllValidMovesForTile(tile);
+          int bestScoreTile = Integer.MIN_VALUE;
+          int currentScoreTile;
+          for (Move move : moves) {
+            Game temp = new Game(game);
+            temp.playPiece(move.getRow(), move.getCol(), move.getTile());
+            currentScoreTile = minimaxBestMoveAI(depth - 1, temp);
+            if (currentScoreTile > bestScoreTile) {
+              bestScoreTile = currentScoreTile;
+            }
+          }
+          scores.add(bestScoreTile);
+        }
+        Collections.sort(scores);
+        bestScore = scores.get(1);
+      } else {
+        List<Move> moves = game.getAllValidMoves();
+        bestScore = Integer.MIN_VALUE;
+        int currentScore;
+        for (Move move : moves) {
+          Game temp = new Game(Game.dupBoard(game.getBoard()), game.getNextThree(),
+              game.getHasNextThree());
+          temp.playPiece(move.getRow(), move.getCol(), move.getTile());
+          currentScore = minimaxBestMoveAI(depth - 1, temp);
+          if (currentScore >= bestScore) {
+            bestScore = currentScore;
+          }
+        }
+      }
+    }
+    return bestScore;
+  }
+
+  // Depth > 0
+  private Move minimaxBestMove(int depth, Game game) {
     List<Move> moves = game.getAllValidMoves();
     Move bestMove = null;
     int bestScore = Integer.MIN_VALUE;
+    int currentScore;
     for (Move move : moves) {
-      int[][] board = Game.dupBoard(game.getBoard());
-      int[] result = new int[1];
-      Game.placePiece(board, move.getRow(), move.getCol(), move.getTile(), result);
-      int score = evaluate(board);
-      if (score > bestScore) {
+      Game temp = new Game(Game.dupBoard(game.getBoard()), game.getNextThree(),
+          game.getHasNextThree());
+      temp.playPiece(move.getRow(), move.getCol(), move.getTile());
+      currentScore = minimaxBestMoveAI(depth - 1, temp);
+      if (currentScore >= bestScore) {
+        bestScore = currentScore;
         bestMove = move;
-        bestScore = score;
       }
     }
     return bestMove;
@@ -162,9 +233,9 @@ public class HeuristicAI implements GameAI {
   }
 
 //  private int getNumClusters(int[][] board) {
-//    int[][] tempBoard = Game.dupBoard(board);
+//    int[][] tempBoard = Game.Game.dupBoard(board);
 //    int numClusters = 0;
-//    Coordinate c;
+//    Game.Coordinate c;
 //    while((c = getNext(tempBoard, 1)) != null) {
 //      numClusters++;
 //      tempBoard[c.getRow()][c.getCol()] = 0;
@@ -290,10 +361,94 @@ public class HeuristicAI implements GameAI {
     return result;
   }
 
-  public int evaluate(int[][] board) {
-//    return 3 * largestOpenSpace(board) - 3 * getNumEdges(board) - 8 * getNumCorners(board) - positionScore(board)
-//        - 10 * enclosedSingles(board) - 10 * numCantBePlaced(board) - 10 * numLonePiece(board) + 10 * numSquareGaps(board, 5);
-    return 0 - positionScore(board);
+  private int evaluate(int[][] board) {
+    return 3 * largestOpenSpace(board) - 3 * getNumEdges(board) - 8 * getNumCorners(board) - positionScore(board)
+        - 10 * enclosedSingles(board) - 10 * numCantBePlaced(board) - 10 * numLonePiece(board) + 10 * numSquareGaps(board, 5);
+  }
+
+  @Deprecated
+  private int evaluate2(int[][] board) {
+    int numEdges = 0;
+    int numSquareGaps = 0;
+    int numCorners = 0;
+    int openSpaceScore = 0;
+    int positionScore = 0;
+    int numEnclosedSingles = 0;
+    int numCantBePlaced = 0;
+    int numLonePiece = 0;
+
+    Set<TileID> canBePlaced = new HashSet<>();
+
+    for (int i = 0; i < 10; i++) {
+      for (int j = 0; j < 10; j++) {
+
+        if (i < 6 && j < 6) {
+          boolean gap = true;
+          for (int m = 0; m < 5; m++) {
+            for (int n = 0; n < 5; n++) {
+              if (board[i + m][j + n] == 1) {
+                gap = false;
+                break;
+              }
+            }
+            if (!gap) {
+              break;
+            }
+          }
+          if (gap) numSquareGaps++;
+        }
+
+        if (board[i][j] == 1 && getAdjacents(board, new Coordinate(i, j), 0, true).size() > 0) {
+          numEdges++;
+        }
+
+        if (i > 0 && i < 9 && j > 0 && j < 9 && board[i][j] == 1) {
+          if (!((board[i - 1][j] == 1) || (board[i + 1][j] == 1) ||
+              (board[i][j - 1] == 1) || (board[i][j + 1] == 1))) {
+            numLonePiece++;
+          }
+        }
+
+        for (TileID tile : TileID.values()) {
+          if (!canBePlaced.contains(tile) && Game.checkPlacePiece(board, i, j, tile)) {
+            canBePlaced.add(tile);
+          }
+        }
+
+        if (board[i][j] == 0) {
+          List<Coordinate> adjacents = getAdjacents(board, new Coordinate(i, j), 0, true);
+          if (adjacents.size() == 0) {
+            numEnclosedSingles++;
+          }
+        }
+
+        if (board[i][j] == 1 && isCorner(board, i, j)) numCorners++;
+
+        if (board[i][j] == 1) {
+          if ((i == 0 || i == 9) && (j == 0 || j == 9)) {
+
+          } else if (i == 0 || i == 9 || j == 0 || j == 9) {
+            positionScore++;
+          } else if (i == 1 || i == 8 || j == 1 || j == 8) {
+            positionScore += 2;
+          } else if (i == 2 || i == 7 || j == 2 || j == 7) {
+            positionScore += 3;
+          } else if (i == 3 || i == 6 || j == 3 || j == 6) {
+            positionScore += 4;
+          } else {
+            positionScore += 6;
+          }
+        }
+
+      }
+    }
+
+    openSpaceScore = largestOpenSpace(board);
+
+    numCantBePlaced = 19 - canBePlaced.size();
+
+    return 3 * openSpaceScore - 3 * numEdges - 8 * numCorners - positionScore - 10 * numEnclosedSingles
+        - 10 * numCantBePlaced - 10 * numLonePiece + 10 * numSquareGaps;
   }
 
 }

@@ -34,7 +34,8 @@ The popular mobile game 1010! complete with several variants of AI implementatio
 * Simulates a large number of outcomes and back-propagates results through the result tree
 * Balances exploration and exploitation with UCT
 * Implemented without knowledge of the game itself other than basic rules
-* Scores depend on how much search time is allowed (given 5 seconds of search time for each set of 3 moves, able to reach 10000+)
+* Faster and arguably better than Minimax for this game
+* Scores depend on how much search time is allowed (given 2 seconds of search time for each set of 3 moves, able to reach 50000+)
 * Limitations likely due to:
   - Ambiguity of 'goodness' for each outcome (several implementations for this exist)
   - Existence of shallow traps

@@ -23,7 +23,7 @@ The popular mobile game 1010! complete with several variants of AI implementatio
 * Board evaluated with the same algorithm as the Heuristic AI at the end of search
 * Able to evaluate the best SET of moves given any 3 piece set
 * Exponentially slower than the Heuristic AI
-* Scores reach 35000+ at depth 2-3 (can not calculate median due to time impracticality)
+* Scores reach 35000+ at depth 2-3 (around 5 seconds per set of moves, can not calculate median due to time impracticality)
 * With one more layer of depth, has the potential to reach infinite play time (however, it is very impractical to calculate the next set of 3 as the time complexity rises incredibly fast)
 
 ### Monte Carlo Tree Search (MCTS) AI

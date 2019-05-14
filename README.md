@@ -22,6 +22,10 @@ The popular mobile game 1010! complete with several variants of AI implementatio
 * Searches a dynamic depth ahead (typically 2-3 moves depending on available moves and evaluate score)
 * Board evaluated with the same algorithm as the Heuristic AI at the end of search
 * Able to evaluate the best SET of moves given any 3 piece set
+* Maximizes the board score among valid moves
+* Minimizes based on the worst cases for the next 3 tiles
+    - Since search is implemented with each move, minimization discards the scores for the worst 2 tiles
+    - However, in doing so the AI discards the possibility of 2 or more same (worst case) tiles appearing in the next move set
 * Exponentially slower than the Heuristic AI
 * Scores reach 35000+ at depth 2-3 (around 5 seconds per set of moves, can not calculate median due to time impracticality)
 * With one more layer of depth, has the potential to reach infinite play time (however, it is very impractical to calculate the next set of 3 as the time complexity rises incredibly fast)

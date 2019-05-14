@@ -35,4 +35,5 @@ The popular mobile game 1010! complete with several variants of AI implementatio
   - Ambiguity of 'goodness' for each outcome (several implementations for this exist)
   - Existence of shallow traps
   - Improper balance of exploration and exploitation (has to do with the board score)
+* Most of these limitations are likely to be overcome with a Temporal Difference (TD) implementation
 * Can reach even higher scores when combined with Heuristic board evaluation algorithm, but will become much slower to adequately search possibilities
